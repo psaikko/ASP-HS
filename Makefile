@@ -5,21 +5,20 @@ OBJFILES	=	obj/IHSOptimizer.o obj/Main.o obj/CPLEXInterface.o obj/Timer.o obj/Ar
 CPPFLAGS	+=	-O3 -std=c++14 -pthread -fPIC -m64 \
 -D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS -MMD
 
-WARNS	=	-pedantic -Wall -Wextra -Wno-ignored-attributes -Wno-reorder
+WARNS	=	-pedantic -Wall -Wextra -Wno-ignored-attributes -Wno-reorder -Wno-sign-compare
 
 CPPFLAGS	+= -fno-strict-aliasing -fexceptions -DIL_STD -Ioptions
 IP_LNDIRS	=	-L$(CPLEXLIBDIR) -L$(CONCERTLIBDIR)
 IP_LNFLAGS	=	-lconcert -lilocplex -lcplex -lm -lpthread
 IP_INCLUDES	=	-I$(CPLEXDIR)/include -I$(CONCERTDIR)/include
 
-WASP_OBJFILES	=	$(shell find ./wasp/build/release/ -name *.o | grep -v main)
 WASP_INCLUDES	=	-I./wasp/src
 
 
 EXE	=	bin/asp-hs
 
 
-.PHONY: all clean
+.PHONY: all clean wasp dirs
 all: options/regenerate $(EXE)
 
 options/%.cpp:
@@ -34,24 +33,25 @@ options/regenerate: options/params.csv options/generate.py
 	@touch options/regenerate
 
 clean:
-	rm -rf obj
+	rm -rf obj bin
+	make -s -C ./wasp clean
 
-obj:
+dirs:
 	@-mkdir -p obj
+	@-mkdir -p bin
 
 wasp:
 	make -s -C ./wasp BUILD=release
 
-$(EXE):	obj $(OBJFILES)	wasp
-	@mkdir -p bin
+$(EXE):	dirs $(OBJFILES) wasp
 	@echo "-> linking $@"
-	@g++ $(CPPFLAGS) $(OBJFILES) $(WASP_OBJFILES) $(IP_LNDIRS) $(IP_LNFLAGS) -o $@
+	@g++ $(CPPFLAGS) $(OBJFILES) $(shell find ./wasp/build/release/ -name *.o | grep -v main) $(IP_LNDIRS) $(IP_LNFLAGS) -o $@
 
 obj/%.o: src/%.cpp
 	@echo "-> compiling $@"
 	@g++ $(CPPFLAGS) $(WASP_INCLUDES) $(IP_INCLUDES) $(WARNS) -c $< -o $@
 
--include $(shell find obj -type f -name "*.d")
+-include $(shell [ -e bin ] && find obj -type f -name "*.d")
 
 ########## Tests
 

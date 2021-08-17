@@ -55,7 +55,7 @@ obj/%.o: src/%.cpp
 
 ########## Tests
 
-TESTS_DIR = tests
+TESTS_DIR = wasp/tests
 
 TESTS_TESTER = $(TESTS_DIR)/pyregtest.py
 
@@ -72,11 +72,9 @@ TESTS_DIR_asp_WeakConstraints = $(TESTS_DIR)/asp/weakConstraints
 TESTS_SRC_asp_WeakConstraints = $(sort $(shell find $(TESTS_DIR_asp_WeakConstraints) -name '*.test.py'))
 TESTS_OUT_asp_WeakConstraints = $(patsubst %.test.py,%.test.py.text, $(TESTS_SRC_asp_WeakConstraints))
 
-test: tests/asp/weakConstraints
+test: wasp/tests/asp/weakConstraints
 
-tests/asp: tests/asp/weakConstraints
-
-tests/asp/weakConstraints: $(TESTS_OUT_asp_WeakConstraints)
+wasp/tests/asp/weakConstraints: $(TESTS_OUT_asp_WeakConstraints)
 
 $(TESTS_OUT_asp_WeakConstraints):
 	@$(TESTS_TESTER) "$(TESTS_COMMAND_WeakConstraints)" $(patsubst %.test.py.text,%.test.py , $@) $(TESTS_CHECKER_WeakConstraints) $(TESTS_REPORT_text)

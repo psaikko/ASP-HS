@@ -9,7 +9,7 @@ WARNS	=	-pedantic -Wall -Wextra -Wno-ignored-attributes -Wno-reorder -Wno-sign-c
 
 CPPFLAGS	+= -fno-strict-aliasing -fexceptions -DIL_STD -Ioptions
 IP_LNDIRS	=	-L$(CPLEXLIBDIR) -L$(CONCERTLIBDIR)
-IP_LNFLAGS	=	-lconcert -lilocplex -lcplex -lm -lpthread
+IP_LNFLAGS	=	-lconcert -lilocplex -lcplex -lm -ldl -lpthread
 IP_INCLUDES	=	-I$(CPLEXDIR)/include -I$(CONCERTDIR)/include
 
 WASP_INCLUDES	=	-I./wasp/src

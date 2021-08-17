@@ -60,7 +60,7 @@ TESTS_DIR = wasp/tests
 TESTS_TESTER = $(TESTS_DIR)/pyregtest.py
 
 BINARY_ASPHS = $(EXE)
-TESTS_COMMAND_waspweak = $(BINARY_ASPHS) - --silent --disjoint-hs --reducedcosts --clarke-lp-lb --ip-seeding
+TESTS_COMMAND_waspweak = $(BINARY_ASPHS) - --silent --disjoint-hs --reducedcosts --clark-lp-lb --ip-seeding
 
 TESTS_COMMAND_WeakConstraints = $(TESTS_COMMAND_waspweak)
 
@@ -73,7 +73,6 @@ TESTS_SRC_asp_WeakConstraints = $(sort $(shell find $(TESTS_DIR_asp_WeakConstrai
 TESTS_OUT_asp_WeakConstraints = $(patsubst %.test.py,%.test.py.text, $(TESTS_SRC_asp_WeakConstraints))
 
 test: wasp/tests/asp/weakConstraints
-
 wasp/tests/asp/weakConstraints: $(TESTS_OUT_asp_WeakConstraints)
 
 $(TESTS_OUT_asp_WeakConstraints):

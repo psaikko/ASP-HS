@@ -115,25 +115,25 @@ void IHSOptimizer::solve(istream & instance) {
 
   unordered_set<int> fixedVars;
 
-  if (cfg.clarkeIpLB || cfg.clarkeLpLB) {
-    // create temporary IP instance of clarke's completion
-    CPLEXInterface *clarke_IP = new CPLEXInterface(log);
+  if (cfg.clarkIpLB || cfg.clarkLpLB) {
+    // create temporary IP instance of clark's completion
+    CPLEXInterface *clark_IP = new CPLEXInterface(log);
     for (auto pair : id_weight)
-      clarke_IP->addObjectiveVariable(pair.first, pair.second);
+      clark_IP->addObjectiveVariable(pair.first, pair.second);
 
-    feedClauses(clarke_IP);
+    feedClauses(clark_IP);
  
     // solve IP or LP relaxation
     unordered_map<int, bool> forcedVars;
-    if (cfg.clarkeIpLB) {
-      clarke_IP->computeHS(hittingSet, LB, UB, forcedVars);
-    } else { // clarkeLpLB
-      LB = clarke_IP->computeRelaxedBound(LB, UB, forcedVars);
+    if (cfg.clarkIpLB) {
+      clark_IP->computeHS(hittingSet, LB, UB, forcedVars);
+    } else { // clarkLpLB
+      LB = clark_IP->computeRelaxedBound(LB, UB, forcedVars);
     }
 
-    log << "c clarke LB " << LB << endl;
+    log << "c clark LB " << LB << endl;
 
-    delete clarke_IP;
+    delete clark_IP;
   }
 
   if (cfg.ipClauses) feedClauses(IP_solver);
@@ -530,64 +530,6 @@ void IHSOptimizer::cardMinimize(vector< Literal > & core) {
   minimizeTimer.stop();
 
 }
-
-/*
-void IHSOptimizer::minimizeCore(vector< Literal > & core) {
-
-  vector< Literal > assumptions;
-
-  minimizeTimer.start();
-
-  int a = 0;
-  int b = core.size() - 1;
-
-  vector< Literal > subCore;
-
-  //cout << "CORE " << core.size() << endl;
-
-  // find smallest j for which core[0..j] is unsat
-  while (a < b) {
-    //cout << a << " " << b << endl;
-    int k = (a + b) / 2;
-
-    assumptions.clear();
-
-    // test literals 0 .. j+c
-    for (unsigned i = 0; i < k; ++i) {
-      assumptions.push_back(core[i]);
-    }
-
-    int res = ASP_solver->solve(assumptions, subCore);
-
-    if (res == COHERENT) {
-      //cout << "COHERENT " << assumptions.size() << endl;
-      a = k+1;
-    } else { //if (res == INCOHERENT) {
-      //cout << "INCOHERENT " << assumptions.size() << endl;
-      b = k;
-    }
-  }
-
-  //cout << "END " << assumptions.size() << endl;
-
-  log << "c Minimized: " << core.size() << " -> " << b+1 << endl;
-
-  while (core.size()-1 > b) {
-    core.pop_back();
-  }
-
-  //cout << "MINIMIZED " << core.size() << endl;
-
-  if (cores.size()) {
-    avgCoreSizeMinimized = (avgCoreSizeMinimized * cores.size() + core.size()) / (cores.size() + 1);
-  } else {
-    avgCoreSizeMinimized = core.size();
-  }
-
-  minimizeTimer.stop();
-
-}
-*/
 
 void IHSOptimizer::printStats() {
   log << "c cores found: " << cores.size() << endl;
